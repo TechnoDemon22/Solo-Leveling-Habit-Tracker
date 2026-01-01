@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity System - Solo Leveling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="warning-banner">
+        ═══ SYSTEM NOTICE ═══ PROGRESS WILL RESET ON REFRESH - USE EXPORT/IMPORT TO SAVE DATA ═══
+    </div>
+
+    <div class="app-container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">┌─ PRODUCTIVITY SYSTEM ─┐</h1>
+                <div class="header-info">
+                    <div class="date-time" id="dateTime"></div>
+                    <div class="streak-display">
+                        STREAK: <span id="streakCount">0</span> DAYS │ SYSTEM: <span style="color: var(--success)">ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportProgress()">[ EXPORT ]</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">[ IMPORT ]</button>
+                <input type="file" id="importFile" accept=".json" style="display: none" onchange="importProgress(event)">
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="status" onclick="switchTab('status')">STATUS</button>
+            <button class="nav-tab" data-tab="daily" onclick="switchTab('daily')">DAILY QUESTS</button>
+            <button class="nav-tab" data-tab="weekly" onclick="switchTab('weekly')">WEEKLY QUESTS</button>
+            <button class="nav-tab" data-tab="tasks" onclick="switchTab('tasks')">CUSTOM TASKS</button>
+            <button class="nav-tab" data-tab="skills" onclick="switchTab('skills')">SKILLS</button>
+            <button class="nav-tab" data-tab="achievements" onclick="switchTab('achievements')">ACHIEVEMENTS</button>
+            <button class="nav-tab" data-tab="stats" onclick="switchTab('stats')">STATISTICS</button>
+        </nav>
+
+        <main class="main-content">
+            <!-- STATUS TAB -->
+            <div id="status" class="tab-content active">
+                <div class="quote-display" id="quoteDisplay"></div>
+                
+                <div class="status-grid">
+                    <div class="card level-card">
+                        <div class="card-header">
+                            <h2>═══ LEVEL ═══</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="level-display">
+                                <span class="level-number" id="playerLevel">1</span>
+                            </div>
+                            <div class="exp-bar-container">
+                                <div class="exp-bar" id="expBar"></div>
+                                <div class="exp-text" id="expText">0 / 200 EXP</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stats-card">
+                        <div class="card-header">
+                            <h2>═══ ATTRIBUTES ═══</h2>
+                            <span class="stat-points" id="statPointsDisplay">POINTS: 0</span>
+                        </div>
+                        <div class="card-body stats-list" id="statsList"></div>
+                    </div>
+
+                    <div class="card vitals-card">
+                        <div class="card-header">
+                            <h2>═══ VITALS ═══</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="vital-bar">
+                                <div class="vital-label">HP (Energy)</div>
+                                <div class="bar-container hp-bar">
+                                    <div class="bar-fill" id="hpBar"></div>
+                                    <div class="bar-text" id="hpText">100 / 100</div>
+                                </div>
+                            </div>
+                            <div class="vital-bar">
+                                <div class="vital-label">MP (Motivation)</div>
+                                <div class="bar-container mp-bar">
+                                    <div class="bar-fill" id="mpBar"></div>
+                                    <div class="bar-text" id="mpText">100 / 100</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAILY QUESTS TAB -->
+            <div id="daily" class="tab-content">
+                <div class="quest-header">
+                    <h2>┌─ DAILY QUESTS ─────────────────┐</h2>
+                    <div class="quest-info">
+                        <span id="dailyExpEarned">0</span> / <span id="dailyExpTotal">495</span> EXP
+                    </div>
+                    <button class="btn btn-primary" onclick="resetDailyQuests()">[ RESET ]</button>
+                </div>
+                <div class="quests-list" id="dailyQuestsList"></div>
+            </div>
+
+            <!-- WEEKLY QUESTS TAB -->
+            <div id="weekly" class="tab-content">
+                <div class="quest-header">
+                    <h2>┌─ WEEKLY QUESTS ────────────────┐</h2>
+                    <button class="btn btn-primary" onclick="resetWeeklyQuests()">[ RESET ]</button>
+                </div>
+                <div class="quests-list" id="weeklyQuestsList"></div>
+            </div>
+
+            <!-- TASKS TAB -->
+            <div id="tasks" class="tab-content">
+                <div class="quest-header">
+                    <h2>┌─ CUSTOM TASKS ─────────────────┐</h2>
+                </div>
+                <div class="task-form card">
+                    <div class="card-body">
+                        <div class="form-row">
+                            <input type="text" id="taskName" placeholder="ENTER TASK NAME..." class="form-input">
+                        </div>
+                        <div class="form-row">
+                            <select id="taskDifficulty" class="form-select">
+                                <option value="50">EASY (50 EXP)</option>
+                                <option value="100" selected>MEDIUM (100 EXP)</option>
+                                <option value="200">HARD (200 EXP)</option>
+                                <option value="500">EPIC (500 EXP)</option>
+                            </select>
+                            <select id="taskPriority" class="form-select">
+                                <option value="low">LOW PRIORITY</option>
+                                <option value="medium" selected>MEDIUM PRIORITY</option>
+                                <option value="high">HIGH PRIORITY</option>
+                                <option value="critical">CRITICAL PRIORITY</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="addCustomTask()">[ ADD TASK ]</button>
+                    </div>
+                </div>
+                <div class="tasks-list" id="customTasksList"></div>
+            </div>
+
+            <!-- SKILLS TAB -->
+            <div id="skills" class="tab-content">
+                <div class="quest-header">
+                    <h2>┌─ SKILLS ───────────────────────┐</h2>
+                    <p class="tab-description">UNLOCK AND UPGRADE SKILLS TO BOOST YOUR PRODUCTIVITY</p>
+                </div>
+                <div class="skills-grid" id="skillsGrid"></div>
+            </div>
+
+            <!-- ACHIEVEMENTS TAB -->
+            <div id="achievements" class="tab-content">
+                <div class="quest-header">
+                    <h2>┌─ ACHIEVEMENTS ─────────────────┐</h2>
+                </div>
+                <div class="achievements-grid" id="achievementsGrid"></div>
+            </div>
+
+            <!-- STATISTICS TAB -->
+            <div id="stats" class="tab-content">
+                <div class="quest-header">
+                    <h2>┌─ STATISTICS ───────────────────┐</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalExp">0</div>
+                        <div class="stat-label">TOTAL EXP</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="totalTasks">0</div>
+                        <div class="stat-label">TASKS COMPLETED</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="currentStreak">0</div>
+                        <div class="stat-label">CURRENT STREAK</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="longestStreak">0</div>
+                        <div class="stat-label">LONGEST STREAK</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="completionRate">0%</div>
+                        <div class="stat-label">COMPLETION RATE</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="skillsUnlocked">0</div>
+                        <div class="stat-label">SKILLS UNLOCKED</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Level Up Modal -->
+    <div id="levelUpModal" class="modal">
+        <div class="modal-content level-up-modal">
+            <div class="level-up-glow"></div>
+            <h1 class="level-up-text">═══ LEVEL UP ═══</h1>
+            <div class="level-transition">
+                <span class="old-level" id="oldLevel">1</span>
+                <span class="arrow">→</span>
+                <span class="new-level" id="newLevel">2</span>
+            </div>
+            <div class="level-up-rewards">
+                <p>│ +5 STAT POINTS │</p>
+                <p>│ HP AND MP RESTORED │</p>
+            </div>
+            <button class="btn btn-primary" onclick="closeLevelUpModal()">┌ CONTINUE ┐</button>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
